@@ -6,6 +6,9 @@ import Footer from './components/Footer';
 import Contacts from './components/Contacts';
 import Page404 from './components/Page404';
 import About from './components/About';
+import Banner from './components/Banner';
+import Home from './components/Home';
+import Catalog from './components/Catalog';
 
 
 
@@ -16,10 +19,13 @@ export default function App() {
         <Header />
         <main className="container">
           <div className="col">
-            <section class="top-sales">
+            <section className="top-sales">
+            <Banner />
             <Switch>
-              <Route path="/contacts" component={Contacts} />
               <Route path="/about" component={About} />
+              <Route path="/catalog" component={Catalog} />
+              <Route path="/contacts" component={Contacts} />
+              <Route path="/" component={Home} />
               <Route component={Page404} />
             </Switch>
             </section>
