@@ -25,7 +25,7 @@ export default function App() {
               <Route path="/about" component={About} />
               <Route path="/catalog" component={Catalog} />
               <Route path="/contacts" component={Contacts} />
-              <Route path="/" component={Home} />
+              <Route path="/" component={Home} exact/>
               <Route component={Page404} />
             </Switch>
             </section>
