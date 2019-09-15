@@ -1,12 +1,12 @@
 import React, { useEffect, Fragment } from 'react';
 import {NavLink, Link} from 'react-router-dom';
 import {useSelector, useDispatch} from 'react-redux';
-import {fetchItems, fetchCategories} from '../actions/actionCreators';
+import {fetchItems, fetchCategories, fetchMore} from '../actions/actionCreators';
 import Preloader from './Preloader';
 import Error from './Error';
 
-export default function Catalog() {
-  const {items, categories, loadingItems, loadingCategories, errorItems, errorCategories} = useSelector(state => state.catalog);
+export default function Catalog(props) {
+  const {items, categories, loadingItems, loadingCategories, errorItems, errorCategories, errorMore, more} = useSelector(state => state.catalog);
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(fetchCategories());
@@ -18,9 +18,15 @@ export default function Catalog() {
     dispatch(fetchItems(id ? `?categoryId=${id}` : null))
   }
   
+  const handleMore = () => {
+    const offset = items.length; 
+    const params = new URLSearchParams(document.location.search);
+    const categoryId = params.get('categoryId');
+    dispatch(fetchMore(offset, categoryId));
+  }
   if (loadingCategories) return <Preloader />
 
-  if (errorCategories) return <Error fetchFunc={fetchCategories()}/>
+  if (errorCategories) return <Error func={dispatch(fetchCategories())}/>
 
   return (
     <Fragment>
@@ -35,9 +41,8 @@ export default function Catalog() {
           </li>
         ))}
       </ul>
-      {errorItems && <Error fetchFunc={fetchItems()}/>}
-      {loadingItems && <Preloader />}
-      <div className="catalog-categories nav justify-content-center">
+      {errorItems && <Error func={dispatch(fetchItems())}/>}
+      <div className="row">
         {items.map(o => (
           <div className="col-4" key={o.id}>
             <div className="card catalog-item-card">
@@ -50,10 +55,14 @@ export default function Catalog() {
             </div>
           </div>
         ))}
-        <div className="text-center">
-          <button className="btn btn-outline-primary">Загрузить ещё</button>
-        </div>
       </div>
+      {loadingItems && <Preloader />}
+        {errorMore && <Error func={handleMore}/>}
+        {(!loadingItems && more) && (
+          <div className="text-center">
+            <button className="btn btn-outline-primary" onClick={handleMore}>Загрузить ещё</button>
+          </div>
+        )}
     </Fragment>
   )
 }

@@ -15,7 +15,7 @@ export default function TopSales() {
   return (
     <Fragment>
       {loading && <Preloader />}
-      {error && <Error fetchFunc={fetchTopSales()} />}
+      {error && <Error func={dispatch(fetchTopSales())} />}
       {(items.length > 0) && (
         <div className="row">
           {items.map(o => (

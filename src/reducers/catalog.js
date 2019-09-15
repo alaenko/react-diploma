@@ -4,7 +4,10 @@ import {
   FETCH_ITEMS_SUCCESS,
   FETCH_CATEGORIES_REQUEST,
   FETCH_CATEGORIES_FAILURE,
-  FETCH_CATEGORIES_SUCCESS
+  FETCH_CATEGORIES_SUCCESS,
+  FETCH_MORE_REQUEST,
+  FETCH_MORE_FAILURE,
+  FETCH_MORE_SUCCESS
 } from '../actions/actionTypes'
 
 const initialState = {
@@ -14,6 +17,8 @@ const initialState = {
   loadingCategories: false,
   errorItems: null,
   errorCategories: null,
+  errorMore: null,
+  more: true,
 };
 
 export default function catalogReducer(state = initialState, action) {
@@ -38,6 +43,7 @@ export default function catalogReducer(state = initialState, action) {
         items,
         loadingItems: false,
         errorItems: null,
+        more: true
       };
       case FETCH_CATEGORIES_REQUEST:
       return {
@@ -60,6 +66,30 @@ export default function catalogReducer(state = initialState, action) {
         loadingCategories: false,
         errorCategories: null,
       };
+      case FETCH_MORE_REQUEST:
+        return {
+          ...state,
+          loadingItems: true,
+          errorMore: null,
+          more: false,
+        };
+      case FETCH_MORE_FAILURE:
+        //const {errorMore} = action.payload;
+        return {
+          ...state,
+          errorMore: true,
+          loadingItems: false,
+          more: false
+        };
+      case FETCH_MORE_SUCCESS:
+        const {moreItems} = action.payload;
+        moreItems.forEach(o => state.items.push(o))
+        return {
+          ...state,
+          loadingItems: false,
+          errorMore: null,
+          more: moreItems.length < 6 ? false : true
+        };
     default:
       return state;
   }

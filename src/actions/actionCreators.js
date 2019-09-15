@@ -7,7 +7,10 @@ import {
   FETCH_ITEMS_SUCCESS,
   FETCH_CATEGORIES_REQUEST,
   FETCH_CATEGORIES_FAILURE,
-  FETCH_CATEGORIES_SUCCESS
+  FETCH_CATEGORIES_SUCCESS,
+  FETCH_MORE_REQUEST,
+  FETCH_MORE_FAILURE,
+  FETCH_MORE_SUCCESS
 } from '../actions/actionTypes';
 
 ////Top-Sales
@@ -124,5 +127,43 @@ export const fetchCategories = () => async (dispatch) => {
     dispatch(fetchCategoriesSuccess(data));
   } catch (error) {
     dispatch(fetchCategoriesFailure(error.message));
+  }
+};
+
+////Catalog more items
+export const fetchMoreRequest =() => ({
+  type: FETCH_MORE_REQUEST,
+});
+
+export const fetchMoreFailure = errorMore => ({
+  type: FETCH_MORE_FAILURE,
+  payload: {
+    errorMore,
+  },
+});
+
+export const fetchMoreSuccess = moreItems => ({
+  type: FETCH_MORE_SUCCESS,
+  payload: {
+    moreItems,
+  },
+});
+
+export const fetchMore = (offset, categoryId) => async (dispatch) => {
+  dispatch(fetchMoreRequest());
+
+  try {
+    const response = await fetch(categoryId ? `${process.env.REACT_APP_API_ITEMS}?offset=${offset}&categoryId=${categoryId}` : `${process.env.REACT_APP_API_ITEMS}?offset=${offset}`, {
+      mode: 'cors',
+    });
+
+    if (!response.ok) {
+      throw new Error(response.statusText);
+    }
+    
+    const data = await response.json();
+    dispatch(fetchMoreSuccess(data));
+  } catch (error) {
+    dispatch(fetchMoreFailure(error.message));
   }
 };

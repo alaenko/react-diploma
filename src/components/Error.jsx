@@ -1,14 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {useDispatch} from 'react-redux';
 
-export default function Error({fetchFunc}) {
+export default function Error({func}) {
+
+  const handleUpdate = () => func();
   
-  const dispatch = useDispatch();
-
-  const handleUpdate = () => {
-    dispatch(fetchFunc)
-  }
   return (
     <div className="text-center">
       <p>Произошла ошибка!</p>
@@ -18,6 +14,6 @@ export default function Error({fetchFunc}) {
 }
 
 Error.propTypes = {
-  fetchFunc: PropTypes.func.isRequired
+  func: PropTypes.func.isRequired
 }
 
