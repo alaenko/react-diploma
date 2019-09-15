@@ -1,8 +1,31 @@
 import React from 'react';
-import {NavLink} from 'react-router-dom';
+import {NavLink, withRouter} from 'react-router-dom';
 import headerLogo from '../img/header-logo.png';
+import {changeSearchField, setSearching} from '../actions/actionCreators';
+import {useSelector, useDispatch} from 'react-redux';
+import Search from './Search';
 
-export default function Header() {
+
+function Header({history}) {
+  const {isSearching, searchString} = useSelector(state => state.search);
+  const dispatch = useDispatch();
+  
+  const handleSubmit = (evt) => {
+    evt.preventDefault();
+    if (searchString) {
+      history.replace(`/catalog?q=${searchString}`);
+      dispatch(setSearching());
+    }
+  }
+  
+  const handleSearchClick = () => {
+    dispatch(setSearching());
+  }
+
+  const handleChange = (evt) => {
+    dispatch(changeSearchField(evt.target.value));
+  }
+
   return (
     <header className="container"> 
       <div className="row">
@@ -28,15 +51,13 @@ export default function Header() {
               </ul>
               <div>
                 <div className="header-controls-pics">
-                  <div dataId="search-expander" className="header-controls-pic header-controls-search"></div>
+                  <div onClick={handleSearchClick} className="header-controls-pic header-controls-search"></div>
                   <div className="header-controls-pic header-controls-cart">
                     <div className="header-controls-cart-full">1</div>
                     <div className="header-controls-cart-menu"></div>
                   </div>
                 </div>
-                <form dataId="search-form" className="header-controls-search-form form-inline">
-                  <input className="form-control" placeholder="Поиск"/>
-                </form>
+                {isSearching && <Search handleChange={handleChange} handleSubmit={handleSubmit} searchString={searchString} className="header-controls-search-form form-inline"/>}
               </div>
             </div>
           </nav>
@@ -46,3 +67,5 @@ export default function Header() {
   )
 }
 
+const HeaderWithRouter = withRouter(Header);
+export default HeaderWithRouter;

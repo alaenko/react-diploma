@@ -1,10 +1,14 @@
-import React, {Fragment} from 'react';
+import React, {useEffect} from 'react';
+import Catalog from './Catalog';
 
-export default function PageCatalog(props) {
+
+export default function PageCatalog({history, location}) {
+
   return (
-    <Fragment>
-      
-    </Fragment>
+    <section className="catalog">
+      <h2 className="text-center">Каталог</h2>
+      <Catalog location={location} history={history}/>
+    </section>
   )
 }
 

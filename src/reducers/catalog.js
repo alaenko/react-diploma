@@ -18,7 +18,8 @@ const initialState = {
   errorItems: null,
   errorCategories: null,
   errorMore: null,
-  more: true,
+  more: true
+  
 };
 
 export default function catalogReducer(state = initialState, action) {
@@ -74,7 +75,6 @@ export default function catalogReducer(state = initialState, action) {
           more: false,
         };
       case FETCH_MORE_FAILURE:
-        //const {errorMore} = action.payload;
         return {
           ...state,
           errorMore: true,

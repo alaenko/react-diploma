@@ -10,11 +10,14 @@ import {
   FETCH_CATEGORIES_SUCCESS,
   FETCH_MORE_REQUEST,
   FETCH_MORE_FAILURE,
-  FETCH_MORE_SUCCESS
+  FETCH_MORE_SUCCESS,
+  CHANGE_SEARCH_FIELD,
+  IS_SEARCHING
 } from '../actions/actionTypes';
 
+
 ////Top-Sales
-export const fetchTopSalesRequest =() => ({
+export const fetchTopSalesRequest = () => ({
   type: FETCH_TOPSALES_REQUEST,
 });
 
@@ -71,11 +74,11 @@ export const fetchItemsSuccess = items => ({
   },
 });
 
-export const fetchItems = (category) => async (dispatch) => {
+export const fetchItems = search => async (dispatch) => {
   dispatch(fetchItemsRequest());
 
   try {
-    const response = await fetch(category ? process.env.REACT_APP_API_ITEMS + category : process.env.REACT_APP_API_ITEMS, {
+    const response = await fetch(`${process.env.REACT_APP_API_ITEMS}?${search}`, {
       mode: 'cors',
     });
 
@@ -149,12 +152,13 @@ export const fetchMoreSuccess = moreItems => ({
   },
 });
 
-export const fetchMore = (offset, categoryId) => async (dispatch) => {
+export const fetchMore = search => async (dispatch) => {
   dispatch(fetchMoreRequest());
 
   try {
-    const response = await fetch(categoryId ? `${process.env.REACT_APP_API_ITEMS}?offset=${offset}&categoryId=${categoryId}` : `${process.env.REACT_APP_API_ITEMS}?offset=${offset}`, {
-      mode: 'cors',
+    const response = await fetch(`${process.env.REACT_APP_API_ITEMS}?${search}`, {
+
+    mode: 'cors',
     });
 
     if (!response.ok) {
@@ -167,3 +171,16 @@ export const fetchMore = (offset, categoryId) => async (dispatch) => {
     dispatch(fetchMoreFailure(error.message));
   }
 };
+
+////Search
+export const changeSearchField = searchString => ({
+  type: CHANGE_SEARCH_FIELD,
+  payload: {
+    searchString,
+  },
+});
+
+export const setSearching =() => ({
+  type: IS_SEARCHING,
+});
+

@@ -1,47 +1,74 @@
+
 import React, { useEffect, Fragment } from 'react';
 import {NavLink, Link} from 'react-router-dom';
 import {useSelector, useDispatch} from 'react-redux';
-import {fetchItems, fetchCategories, fetchMore} from '../actions/actionCreators';
+import {fetchItems, fetchCategories, fetchMore, changeSearchField} from '../actions/actionCreators';
 import Preloader from './Preloader';
 import Error from './Error';
+import Search from './Search';
 
-export default function Catalog(props) {
+export default function Catalog({location, history}) {
   const {items, categories, loadingItems, loadingCategories, errorItems, errorCategories, errorMore, more} = useSelector(state => state.catalog);
+  const {searchString} = useSelector(state => state.search);
+
   const dispatch = useDispatch();
+  const offset = items.length;
+  const params = new URLSearchParams(location.search);
+  const setUrl = () => history.replace(`${location.pathname}?${params.toString()}`)
+
   useEffect(() => {
     dispatch(fetchCategories());
-    dispatch(fetchItems());
+    dispatch(fetchItems(params));
   }, [dispatch]);
 
   const handleClick = (evt, id) => {
+    evt.preventDefault()
     if (evt.target.classList.contains('active')) return;
-    dispatch(fetchItems(id ? `?categoryId=${id}` : null))
+    if (evt.target.text === 'Все') {
+      params.delete('categoryId');
+    } else {
+      params.set('categoryId', id);
+    }
+    params.delete('offset');
+    setUrl();
+    dispatch(fetchItems(params))
   }
-  
+
   const handleMore = () => {
-    const offset = items.length; 
-    const params = new URLSearchParams(document.location.search);
-    const categoryId = params.get('categoryId');
-    dispatch(fetchMore(offset, categoryId));
+    params.set('offset', offset)
+    setUrl();
+    dispatch(fetchMore(params));
   }
+
+  const handleSubmit = (evt) => {
+    evt.preventDefault();
+    params.set('q', searchString);
+    setUrl();
+    dispatch(fetchItems(params));
+  }
+
+  const handleChange = (evt) => {
+    dispatch(changeSearchField(evt.target.value));
+  }
+
   if (loadingCategories) return <Preloader />
 
   if (errorCategories) return <Error func={dispatch(fetchCategories())}/>
-
   return (
     <Fragment>
+    {(location.pathname === '/catalog') && <Search handleChange={handleChange} handleSubmit={handleSubmit} searchString={searchString} className="catalog-search-form form-inline"/>}
       <ul className="catalog-categories nav justify-content-center">
         <li className="nav-item">
-          <NavLink exact isActive={(match, location) => location.pathname + location.search === '/'} to='/' onClick={(evt) => handleClick(evt)} className="nav-link" activeClassName="active">Все</NavLink>
+          <NavLink to='#' isActive={() => !params.has('categoryId')} onClick={(evt) => handleClick(evt)} className="nav-link" activeClassName="active">Все</NavLink>
        </li>
         {categories.map(o => (
           <li className="nav-item" key={o.id}>
-            <NavLink exact isActive={(match, location) => location.pathname + location.search === `/?categoryId=${o.id}`} to={`/?categoryId=${o.id}`} onClick={(evt) => handleClick(evt, o.id)} className="nav-link" activeClassName="active" >{o.title}</NavLink>
+            <NavLink to='#' isActive={() => params.get('categoryId') == o.id} onClick={(evt) => handleClick(evt, o.id)} className="nav-link" activeClassName="active" >{o.title}</NavLink>
 
           </li>
         ))}
       </ul>
-      {errorItems && <Error func={dispatch(fetchItems())}/>}
+      {errorItems && <Error func={dispatch(fetchItems(params))}/>}
       <div className="row">
         {items.map(o => (
           <div className="col-4" key={o.id}>
@@ -62,7 +89,7 @@ export default function Catalog(props) {
           <div className="text-center">
             <button className="btn btn-outline-primary" onClick={handleMore}>Загрузить ещё</button>
           </div>
-        )}
+        )} 
     </Fragment>
   )
 }
