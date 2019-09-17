@@ -1,0 +1,95 @@
+import React, {useEffect, Fragment} from 'react';
+import {useSelector, useDispatch} from 'react-redux';
+import {fetchItem, setQuantity, setSize} from '../actions/actionCreators';
+import Preloader from './Preloader';
+import Error from './Error';
+
+export default function CatalogItem({match, history}) {
+  const {item, avalibleSizes, loading, error, quantity, size} = useSelector(state => state.catalogItem);
+  const dispatch = useDispatch();
+  const id = match.params.id.replace('.html', '');
+
+  useEffect(() => {
+    dispatch(fetchItem(id));
+    
+  }, [dispatch, match.params.id]);
+  
+  const handleDecrease = () => {
+    if (quantity > 0 ) dispatch(setQuantity(quantity - 1));
+  }
+
+  const handleIncrease = () => {
+    if (quantity < 10 ) dispatch(setQuantity(quantity + 1));
+  }
+
+  const handlePickSize = size => {
+    dispatch(setSize(size));
+  }
+
+  if (loading) return <Preloader />
+
+  if (error) return <Error func={dispatch(fetchItem(id))}/>
+
+  return (
+    <Fragment>
+      {item && (
+      <section className="catalog-item"> 
+        <h2 className="text-center">{item.title}</h2>
+         <div className="row">
+            <div className="col-5">
+                <img src={item.images[0]}
+                    className="img-fluid" alt={item.title}/>
+            </div>
+            <div className="col-7">
+                <table className="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <td>Артикул</td>
+                            <td>{item.sku}</td>
+                        </tr>
+                        <tr>
+                            <td>Производитель</td>
+                            <td>{item.manufacturer}</td>
+                        </tr>
+                        <tr>
+                            <td>Цвет</td>
+                            <td>{item.color}</td>
+                        </tr>
+                        <tr>
+                            <td>Материалы</td>
+                            <td>{item.material}</td>
+                        </tr>
+                        <tr>
+                            <td>Сезон</td>
+                            <td>{item.season}</td>
+                        </tr>
+                        <tr>
+                            <td>Повод</td>
+                            <td>{item.reason}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                {avalibleSizes && (
+                  <Fragment>
+                    <div className="text-center">
+                      <p>Размеры в наличии: 
+                      {avalibleSizes.map(o => (<span key={o.size} className={`catalog-item-size ${size === o.size ? "selected" : ""}`} onClick={() => handlePickSize(o.size)}>{o.size}</span>))}
+                      </p>
+                      <p>Количество: 
+                        <span className="btn-group btn-group-sm pl-2">
+                          <button className="btn btn-secondary" onClick={handleDecrease}>-</button>
+                          <span className="btn btn-outline-primary">{quantity}</span>
+                          <button className="btn btn-secondary" onClick={handleIncrease}>+</button>
+                         </span>
+                      </p>
+                    </div>
+                    <button className="btn btn-danger btn-block btn-lg" disabled={size ? false : "disabled"} onClick={() => history.push("/cart.html")}>В корзину</button>
+                  </Fragment>
+                )}
+            </div>
+         </div>
+      </section>
+    )}
+    </Fragment>
+  )
+}

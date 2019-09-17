@@ -4,7 +4,7 @@ import {
 } from '../actions/actionTypes'
 
 const initialState = {
-  searchString: null,
+  searchString: '',
   isSearching: false
 };
 

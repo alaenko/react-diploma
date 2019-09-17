@@ -14,6 +14,6 @@ export default function Error({func}) {
 }
 
 Error.propTypes = {
-  func: PropTypes.func.isRequired
+  func: PropTypes.oneOfType([PropTypes.func, PropTypes.object]).isRequired
 }
 

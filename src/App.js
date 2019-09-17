@@ -9,6 +9,7 @@ import About from './components/About';
 import Banner from './components/Banner';
 import Home from './components/Home';
 import PageCatalog from './components/PageCatalog';
+import CatalogItem from './components/CatalogItem';
 
 
 
@@ -22,9 +23,10 @@ export default function App() {
             <section className="top-sales">
             <Banner />
             <Switch>
-              <Route path="/about" component={About} />
-              <Route path="/catalog" component={PageCatalog} />
-              <Route path="/contacts" component={Contacts} />
+              <Route path="/products/:id.html" component={CatalogItem} />
+              <Route path="/about.html" component={About} />
+              <Route path="/catalog.html" component={PageCatalog} />
+              <Route path="/contacts.html" component={Contacts} />
               <Route path="/" component={Home} exact/>
               <Route component={Page404} />
             </Switch>
