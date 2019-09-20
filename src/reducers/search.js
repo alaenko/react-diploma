@@ -14,7 +14,7 @@ export default function searchReducer(state = initialState, action) {
       const {searchString} = action.payload;
       return {
         ...state,
-        searchString: searchString
+        searchString
       };
     case IS_SEARCHING:
       return {

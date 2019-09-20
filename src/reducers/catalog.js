@@ -11,15 +11,20 @@ import {
 } from '../actions/actionTypes'
 
 const initialState = {
-  items: [],
-  categories: [],
-  loadingItems: false,
-  loadingCategories: false,
-  errorItems: null,
-  errorCategories: null,
-  errorMore: null,
-  more: true
-  
+  items: {
+		data: [],
+		loading: false,
+		error: null,
+	},
+  categories: {
+		data: [],
+		loading: false,
+		error: null,
+  },
+  more: {
+    error: null,
+    show: true 
+  } 
 };
 
 export default function catalogReducer(state = initialState, action) {
@@ -27,68 +32,99 @@ export default function catalogReducer(state = initialState, action) {
     case FETCH_ITEMS_REQUEST:
       return {
         ...state,
-        items: [],
-        loadingItems: true,
+        items: {
+          data: [],
+          loading: true,
+        },
+        more: {
+          error: null,
+          show: false
+        }
       };
     case FETCH_ITEMS_FAILURE:
       const {errorItems} = action.payload;
       return {
         ...state,
-        loadingItems: false,
-        errorItems,
+        items: {
+          loading: false,
+          error: errorItems
+        }
       };
     case FETCH_ITEMS_SUCCESS:
       const {items} = action.payload;
       return {
         ...state,
-        items,
-        loadingItems: false,
-        errorItems: null,
-        more: true
+        items: {
+          data: items,
+          loading: false,
+          error: null
+        },
+        more: {
+          error: null,
+          show: true
+        }
       };
       case FETCH_CATEGORIES_REQUEST:
       return {
         ...state,
-        loadingCategories: true,
-        errorCategories: null,
+        categories: {
+          loading: true,
+          error: null,
+        }
       };
     case FETCH_CATEGORIES_FAILURE:
       const {errorCategories} = action.payload;
       return {
         ...state,
-        loadingCategories: false,
-        errorCategories,
+        categories: {
+          loading: false,
+          error: errorCategories
+        }
       };
     case FETCH_CATEGORIES_SUCCESS:
       const {categories} = action.payload;
       return {
         ...state,
-        categories,
-        loadingCategories: false,
-        errorCategories: null,
+        categories: {
+          data: categories,
+          loading: false,
+          error: null
+        }
       };
       case FETCH_MORE_REQUEST:
         return {
           ...state,
-          loadingItems: true,
-          errorMore: null,
-          more: false,
+          items: {
+            loading: true
+          },
+          more: {
+            error: null,
+            show: false
+          }
         };
       case FETCH_MORE_FAILURE:
         return {
           ...state,
-          errorMore: true,
-          loadingItems: false,
-          more: false
+          items: {
+            loading: false
+          },
+          more: {
+            error: true,
+            show: false
+          }
         };
       case FETCH_MORE_SUCCESS:
         const {moreItems} = action.payload;
         moreItems.forEach(o => state.items.push(o))
         return {
           ...state,
-          loadingItems: false,
-          errorMore: null,
-          more: moreItems.length < 6 ? false : true
+          items: {
+            loading: false
+          },
+          more: {
+            error: null,
+            show: moreItems.length < 6 ? false : true
+          }
         };
     default:
       return state;

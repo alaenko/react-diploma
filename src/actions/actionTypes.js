@@ -19,3 +19,5 @@ export const IS_SEARCHING             = 'IS_SEARCHING';
 export const SET_AVALIBLE_SIZES       = 'SET_AVALIBLE_SIZES';
 export const SET_QUANTITY             = 'SET_QUANTITY';
 export const SET_SIZE                 = 'SET_SIZE';
+export const GET_CART_ITEMS_SUCCESS   = 'GET_CART_ITEMS_SUCCESS';
+export const SET_CART_TOTAL           = 'SET_CART_TOTAL';

@@ -1,5 +1,5 @@
 import React from 'react';
-import {NavLink, withRouter} from 'react-router-dom';
+import {NavLink, Link, withRouter} from 'react-router-dom';
 import headerLogo from '../img/header-logo.png';
 import {changeSearchField, setSearching} from '../actions/actionCreators';
 import {useSelector, useDispatch} from 'react-redux';
@@ -8,12 +8,13 @@ import Search from './Search';
 
 function Header({history}) {
   const {isSearching, searchString} = useSelector(state => state.search);
+  const {cartItems} = useSelector(state => state.cart);
   const dispatch = useDispatch();
   
   const handleSubmit = (evt) => {
     evt.preventDefault();
     if (searchString) {
-      history.replace(`/catalog?q=${searchString}`);
+      history.replace(`/catalog.html?q=${searchString}`);
       dispatch(setSearching());
     }
   }
@@ -52,10 +53,10 @@ function Header({history}) {
               <div>
                 <div className="header-controls-pics">
                   <div onClick={handleSearchClick} className="header-controls-pic header-controls-search"></div>
-                  <div className="header-controls-pic header-controls-cart">
-                    <div className="header-controls-cart-full">1</div>
+                  <Link to="/cart.html" className="header-controls-pic header-controls-cart">
+                    {cartItems && <div className="header-controls-cart-full">{cartItems.length}</div>}
                     <div className="header-controls-cart-menu"></div>
-                  </div>
+                  </Link>
                 </div>
                 {isSearching && <Search handleChange={handleChange} handleSubmit={handleSubmit} searchString={searchString} className="header-controls-search-form form-inline"/>}
               </div>

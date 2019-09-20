@@ -18,7 +18,9 @@ import {
   IS_SEARCHING,
   SET_AVALIBLE_SIZES,
   SET_QUANTITY,
-  SET_SIZE
+  SET_SIZE,
+  GET_CART_ITEMS_SUCCESS,
+  SET_CART_TOTAL
 } from '../actions/actionTypes';
 
 
@@ -62,7 +64,7 @@ export const fetchTopSales = () => async (dispatch) => {
 };
 
 ////Catalog
-export const fetchItemsRequest =() => ({
+export const fetchItemsRequest = () => ({
   type: FETCH_ITEMS_REQUEST,
 });
 
@@ -101,7 +103,7 @@ export const fetchItems = search => async (dispatch) => {
 };
 
 ////Catalog Categories
-export const fetchCategoriesRequest =() => ({
+export const fetchCategoriesRequest = () => ({
   type: FETCH_CATEGORIES_REQUEST,
 });
 
@@ -140,15 +142,12 @@ export const fetchCategories = () => async (dispatch) => {
 };
 
 ////Catalog more items
-export const fetchMoreRequest =() => ({
+export const fetchMoreRequest = () => ({
   type: FETCH_MORE_REQUEST,
 });
 
 export const fetchMoreFailure = errorMore => ({
-  type: FETCH_MORE_FAILURE,
-  payload: {
-    errorMore,
-  },
+  type: FETCH_MORE_FAILURE
 });
 
 export const fetchMoreSuccess = moreItems => ({
@@ -186,12 +185,12 @@ export const changeSearchField = searchString => ({
   },
 });
 
-export const setSearching =() => ({
+export const setSearching = () => ({
   type: IS_SEARCHING,
 });
 
 ////Catalog item
-export const fetchItemRequest =() => ({
+export const fetchItemRequest = () => ({
   type: FETCH_ITEM_REQUEST,
 });
 
@@ -250,3 +249,47 @@ export const fetchItem = (id) => async (dispatch) => {
     dispatch(fetchItemFailure(error.message));
   }
 };
+
+
+////Cart
+export const getCartItemsSuccess = cartItems => ({
+  type: GET_CART_ITEMS_SUCCESS,
+  payload: {
+    cartItems,
+  },
+});
+
+export const setCartTotal = total => ({
+  type: SET_CART_TOTAL,
+  payload: {
+    total,
+  },
+});
+
+export const getCartTotal = () => (dispatch, getState) => {
+  const {cart: {cartItems}} = getState();
+  
+  const total = cartItems.length > 1
+    ? cartItems.reduce((previousItem, item) => {
+        const prevSum = previousItem.price * previousItem.quantity;
+        const sum = item.price * item.quantity;
+        return prevSum + sum;
+      })
+    : cartItems[0].price * cartItems[0].quantity;
+
+  dispatch(setCartTotal(total));
+};
+
+export const getCartItems = () => (dispatch) => {
+  
+  const keys = Object.keys(localStorage);
+  const cartItems = [];
+  for(let key of keys) {
+    cartItems.push(JSON.parse(localStorage.getItem(key)));
+  }
+  if (cartItems.length > 0) {
+    dispatch(getCartItemsSuccess(cartItems));
+    dispatch(getCartTotal());
+  }
+};
+

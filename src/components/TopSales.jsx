@@ -8,6 +8,7 @@ import Error from './Error';
 export default function TopSales() {
   const {items, loading, error} = useSelector(state => state.topSales);
   const dispatch = useDispatch();
+  
   useEffect(() => {
     dispatch(fetchTopSales())
   }, [dispatch])
