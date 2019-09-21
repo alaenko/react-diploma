@@ -1,6 +1,6 @@
 import React, {useEffect, Fragment} from 'react';
 import {useSelector, useDispatch} from 'react-redux';
-import {fetchItem, setQuantity, setSize, getCartItems} from '../actions/actionCreators';
+import {fetchItem, setQuantity, setSize} from '../actions/actionCreators';
 import Preloader from './Preloader';
 import Error from './Error';
 
@@ -11,8 +11,7 @@ export default function CatalogItem({match, history}) {
 
   useEffect(() => {
     dispatch(fetchItem(id));
-
-  }, [dispatch, id]);
+  }, [id]);
   
   const handleDecrease = () => {
     if (quantity > 0 ) dispatch(setQuantity(quantity - 1));
@@ -32,10 +31,9 @@ export default function CatalogItem({match, history}) {
       updatedItem.quantity += 1;
       localStorage[`cartItem${id}_${size}`] = JSON.stringify(updatedItem);
     } else {
-      localStorage[`cartItem${id}_${size}`] = JSON.stringify({name: `cartItem${id}_${size}`, id: id, link: match.url, title: item.title, price: item.price, quantity: quantity, size: size});
+      localStorage[`cartItem${id}_${size}`] = JSON.stringify({name: `cartItem${id}_${size}`, id: Number(id), link: match.url, title: item.title, price: item.price, quantity: quantity, size: size});
     }
     
-    //dispatch(getCartItems());
     history.push("/cart.html");
   }
 

@@ -35,6 +35,7 @@ export default function catalogReducer(state = initialState, action) {
         items: {
           data: [],
           loading: true,
+          error: null
         },
         more: {
           error: null,
@@ -46,16 +47,17 @@ export default function catalogReducer(state = initialState, action) {
       return {
         ...state,
         items: {
+          ...state.items,
           loading: false,
           error: errorItems
         }
       };
     case FETCH_ITEMS_SUCCESS:
-      const {items} = action.payload;
+      const {newItems} = action.payload;
       return {
         ...state,
         items: {
-          data: items,
+          data: newItems,
           loading: false,
           error: null
         },
@@ -95,6 +97,7 @@ export default function catalogReducer(state = initialState, action) {
         return {
           ...state,
           items: {
+            ...state.items,
             loading: true
           },
           more: {
@@ -106,6 +109,7 @@ export default function catalogReducer(state = initialState, action) {
         return {
           ...state,
           items: {
+            ...state.items,
             loading: false
           },
           more: {
@@ -115,10 +119,11 @@ export default function catalogReducer(state = initialState, action) {
         };
       case FETCH_MORE_SUCCESS:
         const {moreItems} = action.payload;
-        moreItems.forEach(o => state.items.push(o))
+        moreItems.forEach(o => state.items.data.push(o));
         return {
           ...state,
           items: {
+            ...state.items,
             loading: false
           },
           more: {

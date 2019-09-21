@@ -14,13 +14,14 @@ export default function Catalog({location, history}) {
   const dispatch = useDispatch();
   const offset = items.data.length;
   const params = new URLSearchParams(location.search);
+
   const setUrl = () => history.replace(`${location.pathname}?${params.toString()}`);
 
   useEffect(() => {
-    if (params.has('q')) params.delete('q');
+    if (params.has('offset')) params.delete('offset');
     dispatch(fetchCategories());
     dispatch(fetchItems(params));
-  }, [dispatch]);
+  }, []);
 
   const handleClickCategory = (evt, id) => {
     evt.preventDefault()

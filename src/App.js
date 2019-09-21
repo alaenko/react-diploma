@@ -1,5 +1,7 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import {useDispatch} from 'react-redux';
+import {getCartItems} from './actions/actionCreators';
 import './App.css';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -11,17 +13,14 @@ import Home from './components/Home';
 import PageCatalog from './components/PageCatalog';
 import CatalogItem from './components/CatalogItem';
 import Cart from './components/Cart';
-import {useDispatch} from 'react-redux';
-import {getCartItems} from './actions/actionCreators';
 
 
 export default function App() {
   const dispatch = useDispatch();
 
-  /* window.onstorage = () => {
-    console.log('window')
+  useEffect(() => {
     dispatch(getCartItems());
-  } */
+  }, [dispatch]);
 
   return (
     <Router>

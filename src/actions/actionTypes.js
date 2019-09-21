@@ -21,3 +21,7 @@ export const SET_QUANTITY             = 'SET_QUANTITY';
 export const SET_SIZE                 = 'SET_SIZE';
 export const GET_CART_ITEMS_SUCCESS   = 'GET_CART_ITEMS_SUCCESS';
 export const SET_CART_TOTAL           = 'SET_CART_TOTAL';
+export const FETCH_ORDER_REQUEST      = 'FETCH_ORDER_REQUEST';
+export const FETCH_ORDER_FAILURE      = 'FETCH_ORDER_FAILURE';
+export const FETCH_ORDER_SUCCESS      = 'FETCH_ORDER_SUCCESS';
+export const CHANGE_FORM_FIELD        = 'CHANGE_FORM_FIELD';

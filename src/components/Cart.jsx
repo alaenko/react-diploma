@@ -1,20 +1,45 @@
 import React, {useEffect, Fragment} from 'react';
 import {useSelector, useDispatch} from 'react-redux';
 import {Link} from 'react-router-dom';
-import {getCartItems} from '../actions/actionCreators';
+import {getCartItems, changeFormField, fetchOrder} from '../actions/actionCreators';
 
 export default function Cart() {
-  const {cartItems, totalSum} = useSelector(state => state.cart);
+  const {cartItems, totalSum, loading, error, success} = useSelector(state => state.cart);
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getCartItems());
-  }, [dispatch]);
+  }, []);
 
   const handleRemove = (name) => {
     localStorage.removeItem(name);
     dispatch(getCartItems());
   }
+
+  const handleChange = evt => {
+    const {id, value} = evt.target;
+    dispatch(changeFormField(id, value));
+  };
+
+  const handleSubmit = evt => {
+    evt.preventDefault();
+    dispatch(fetchOrder());
+  }
+
+  if (success) return (
+    <section className="cart text-center">
+      <p>Ваш заказ оформлен</p>
+      <Link to="/" className="btn btn-outline-secondary">На главную</Link>
+    </section>
+  )
+
+  if (!cartItems) return (
+    <section className="cart text-center">
+      <p>Вы еще ничего не выбрали</p>
+      <Link to="/catalog.html" className="btn btn-outline-secondary">Выбрать</Link>
+    </section>
+  )
+
   return (
     <Fragment>
       <section className="cart">
@@ -40,7 +65,7 @@ export default function Cart() {
                       <td>{o.quantity}</td>
                       <td>{`${o.price} руб.`}</td>
                       <td>{`${o.price * o.quantity} руб.`}</td>
-                      <td><button className="btn btn-outline-danger btn-sm" onClick={() => { handleRemove(o.name)}}>Удалить</button></td>
+                      <td><button className="btn btn-outline-danger btn-sm" onClick={() => handleRemove(o.name)}>Удалить</button></td>
                   </tr>
                 ))}
                 
@@ -51,27 +76,28 @@ export default function Cart() {
               </tbody>
           </table>
       </section>
-      <section className="order">
+      {cartItems && <section className="order">
           <h2 className="text-center">Оформить заказ</h2>
           <div className="card" style={{maxWidth: "30rem", margin: "0 auto"}}>
-              <form className="card-body">
+              <form className="card-body" onSubmit={handleSubmit}>
                   <div className="form-group">
                       <label htmlFor="phone">Телефон</label>
-                      <input className="form-control" id="phone" placeholder="Ваш телефон"/>
+                      <input className="form-control" id="phone" placeholder="Ваш телефон" onChange={handleChange}/>
                   </div>
                   <div className="form-group">
                       <label htmlFor="address">Адрес доставки</label>
-                      <input className="form-control" id="address" placeholder="Адрес доставки"/>
+                      <input className="form-control" id="address" placeholder="Адрес доставки" onChange={handleChange}/>
                   </div>
                   <div className="form-group form-check">
                       <input type="checkbox" className="form-check-input" id="agreement"/>
-                      <label className="form-check-label" htmlFor="agreement">Согласен с правилами доставки</label>
+                      <label className="form-check-label" htmlFor="agreement" onChange={handleChange}>Согласен с правилами доставки</label>
                   </div>
-                  <button type="submit" className="btn btn-outline-secondary">Оформить</button>
+                  <button type="submit" className="btn btn-outline-secondary">{loading ? 'Оформляю..' : 'Оформить'}</button>
+                  {error && <p>Произошла ошибка, попробуйте еще раз.</p>}
               </form>
-
           </div>
       </section>
+      }
     </Fragment>
   )
 

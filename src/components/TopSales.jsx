@@ -11,7 +11,7 @@ export default function TopSales() {
   
   useEffect(() => {
     dispatch(fetchTopSales())
-  }, [dispatch])
+  }, [])
   
   return (
     <Fragment>

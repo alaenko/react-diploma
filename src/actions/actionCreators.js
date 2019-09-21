@@ -20,7 +20,11 @@ import {
   SET_QUANTITY,
   SET_SIZE,
   GET_CART_ITEMS_SUCCESS,
-  SET_CART_TOTAL
+  SET_CART_TOTAL,
+  FETCH_ORDER_REQUEST,
+  FETCH_ORDER_FAILURE,
+  FETCH_ORDER_SUCCESS,
+  CHANGE_FORM_FIELD
 } from '../actions/actionTypes';
 
 
@@ -75,10 +79,10 @@ export const fetchItemsFailure = errorItems => ({
   },
 });
 
-export const fetchItemsSuccess = items => ({
+export const fetchItemsSuccess = newItems => ({
   type: FETCH_ITEMS_SUCCESS,
   payload: {
-    items,
+    newItems,
   },
 });
 
@@ -146,7 +150,7 @@ export const fetchMoreRequest = () => ({
   type: FETCH_MORE_REQUEST,
 });
 
-export const fetchMoreFailure = errorMore => ({
+export const fetchMoreFailure = () => ({
   type: FETCH_MORE_FAILURE
 });
 
@@ -173,7 +177,8 @@ export const fetchMore = search => async (dispatch) => {
     const data = await response.json();
     dispatch(fetchMoreSuccess(data));
   } catch (error) {
-    dispatch(fetchMoreFailure(error.message));
+    dispatch(fetchMoreFailure());
+    console.log(error.message)
   }
 };
 
@@ -259,6 +264,29 @@ export const getCartItemsSuccess = cartItems => ({
   },
 });
 
+export const changeFormField = (name, value) => ({
+  type: CHANGE_FORM_FIELD,
+  payload: {
+    name,
+    value,
+  },
+});
+
+export const fetchOrderRequest = () => ({
+  type: FETCH_ORDER_REQUEST
+});
+
+export const fetchOrderFailure = (error) => ({
+  type: FETCH_ORDER_FAILURE,
+  payload: {
+    error,
+  },
+});
+
+export const fetchOrderSuccess = () => ({
+  type: FETCH_ORDER_SUCCESS
+});
+
 export const setCartTotal = total => ({
   type: SET_CART_TOTAL,
   payload: {
@@ -269,6 +297,11 @@ export const setCartTotal = total => ({
 export const getCartTotal = () => (dispatch, getState) => {
   const {cart: {cartItems}} = getState();
   
+  if (!cartItems) {
+    dispatch(setCartTotal(0));
+    return;
+  }
+
   const total = cartItems.length > 1
     ? cartItems.reduce((previousItem, item) => {
         const prevSum = previousItem.price * previousItem.quantity;
@@ -287,9 +320,46 @@ export const getCartItems = () => (dispatch) => {
   for(let key of keys) {
     cartItems.push(JSON.parse(localStorage.getItem(key)));
   }
-  if (cartItems.length > 0) {
-    dispatch(getCartItemsSuccess(cartItems));
-    dispatch(getCartTotal());
-  }
+  cartItems.length > 0 ? dispatch(getCartItemsSuccess(cartItems)) : dispatch(getCartItemsSuccess(null));
+  dispatch(getCartTotal());
 };
 
+export const fetchOrder = () => async (dispatch, getState) => {
+  const {cart: {cartItems, owner}} = getState();
+  dispatch(fetchOrderRequest());
+  
+  const items = [];
+  cartItems.forEach(o => {
+    items.push({
+      id: o.id,
+      price: o.price,
+      count: o.quantity
+    })
+  });
+
+  const body = {
+    owner: {
+      phone: owner.phone,
+      address: owner.address,
+    },
+    items: items
+  }
+  
+  try {
+    const response = await fetch(`${process.env.REACT_APP_API_ORDER}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8'
+      },
+      body: JSON.stringify(body)
+    });
+
+    if (!response.ok) {
+      throw new Error(response.statusText);
+    }
+    localStorage.clear();
+    dispatch(fetchOrderSuccess());
+  } catch (error) {
+    dispatch(fetchOrderFailure(error.message));
+  }
+};
