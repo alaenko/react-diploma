@@ -16,17 +16,17 @@ export default function TopSales() {
   return (
     <Fragment>
       {loading && <Preloader />}
-      {error && <Error func={dispatch(fetchTopSales())} />}
+      {error && <Error callback={dispatch(fetchTopSales())} />}
       {(items.length > 0) && (
         <div className="row">
-          {items.map(o => (
-            <div className="col-4" key={o.id}>
+          {items.map(item => (
+            <div className="col-4" key={item.id}>
               <div className="card">
-                <img src={o.images[0]} className="card-img-top img-fluid" alt={o.title}/>
+                <img src={item.images[0]} className="card-img-top img-fluid" alt={item.title}/>
                 <div className="card-body">
-                  <p className="card-text">{o.title}</p>
-                  <p className="card-text">{o.price} руб.</p>
-                  <Link to={`/products/${o.id}.html`} className="btn btn-outline-primary">Заказать</Link>
+                  <p className="card-text">{item.title}</p>
+                  <p className="card-text">{item.price} руб.</p>
+                  <Link to={`/products/${item.id}.html`} className="btn btn-outline-primary">Заказать</Link>
                 </div>
               </div>
             </div>

@@ -20,7 +20,7 @@ export default function App() {
 
   useEffect(() => {
     dispatch(getCartItems());
-  }, [dispatch]);
+  }, []);
 
   return (
     <Router>
@@ -31,11 +31,11 @@ export default function App() {
             <section className="top-sales">
             <Banner />
             <Switch>
-              <Route path="/cart.html" component={Cart} />
-              <Route path="/products/:id.html" component={CatalogItem} />
-              <Route path="/about.html" component={About} />
-              <Route path="/catalog.html" component={PageCatalog} />
-              <Route path="/contacts.html" component={Contacts} />
+              <Route path="/cart" component={Cart} />
+              <Route path="/products/:id" component={CatalogItem} />
+              <Route path="/about" component={About} />
+              <Route path="/catalog" component={PageCatalog} />
+              <Route path="/contacts" component={Contacts} />
               <Route path="/" component={Home} exact/>
               <Route component={Page404} />
             </Switch>

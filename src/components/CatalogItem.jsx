@@ -34,12 +34,12 @@ export default function CatalogItem({match, history}) {
       localStorage[`cartItem${id}_${size}`] = JSON.stringify({name: `cartItem${id}_${size}`, id: Number(id), link: match.url, title: item.title, price: item.price, quantity: quantity, size: size});
     }
     
-    history.push("/cart.html");
+    history.push("/cart");
   }
 
   if (loading) return <Preloader />
 
-  if (error) return <Error func={dispatch(fetchItem(id))}/>
+  if (error) return <Error callback={dispatch(fetchItem(id))}/>
 
   return (
     <Fragment>
@@ -84,7 +84,7 @@ export default function CatalogItem({match, history}) {
                   <Fragment>
                     <div className="text-center">
                       <p>Размеры в наличии: 
-                      {avalibleSizes.map(o => (<span key={o.size} className={`catalog-item-size ${size === o.size ? "selected" : ""}`} onClick={() => handlePickSize(o.size)}>{o.size}</span>))}
+                      {avalibleSizes.map(item => (<span key={item.size} className={`catalog-item-size ${size === item.size ? "selected" : ""}`} onClick={() => handlePickSize(item.size)}>{item.size}</span>))}
                       </p>
                       <p>Количество: 
                         <span className="btn-group btn-group-sm pl-2">

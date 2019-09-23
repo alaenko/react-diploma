@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-export default function Error({func}) {
+export default function Error({callback}) {
 
-  const handleUpdate = () => func();
+  const handleUpdate = () => callback();
   
   return (
     <div className="text-center">
@@ -14,6 +14,6 @@ export default function Error({func}) {
 }
 
 Error.propTypes = {
-  func: PropTypes.oneOfType([PropTypes.func, PropTypes.object]).isRequired
+  callback: PropTypes.oneOfType([PropTypes.func, PropTypes.object]).isRequired
 }
 

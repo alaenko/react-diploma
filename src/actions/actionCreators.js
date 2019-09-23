@@ -26,6 +26,7 @@ import {
   FETCH_ORDER_SUCCESS,
   CHANGE_FORM_FIELD
 } from '../actions/actionTypes';
+import urls from '../constants';
 
 
 ////Top-Sales
@@ -51,7 +52,7 @@ export const fetchTopSales = () => async (dispatch) => {
   dispatch(fetchTopSalesRequest());
 
   try {
-    const response = await fetch(process.env.REACT_APP_API_TOPSALES, {
+    const response = await fetch(urls.topSales, {
       mode: 'cors',
     });
 
@@ -90,7 +91,7 @@ export const fetchItems = search => async (dispatch) => {
   dispatch(fetchItemsRequest());
 
   try {
-    const response = await fetch(`${process.env.REACT_APP_API_ITEMS}?${search}`, {
+    const response = await fetch(`${urls.items}?${search}`, {
       mode: 'cors',
     });
 
@@ -129,7 +130,7 @@ export const fetchCategories = () => async (dispatch) => {
   dispatch(fetchCategoriesRequest());
 
   try {
-    const response = await fetch(process.env.REACT_APP_API_CATEGORIES, {
+    const response = await fetch(urls.categories, {
       mode: 'cors',
     });
 
@@ -165,7 +166,7 @@ export const fetchMore = search => async (dispatch) => {
   dispatch(fetchMoreRequest());
 
   try {
-    const response = await fetch(`${process.env.REACT_APP_API_ITEMS}?${search}`, {
+    const response = await fetch(`${urls.items}?${search}`, {
 
     mode: 'cors',
     });
@@ -238,7 +239,7 @@ export const fetchItem = (id) => async (dispatch) => {
   dispatch(fetchItemRequest());
   
   try {
-    const response = await fetch(`${process.env.REACT_APP_API_ITEMS}/${id}`, {
+    const response = await fetch(`${urls.items}/${id}`, {
       mode: 'cors',
     });
 
@@ -247,7 +248,7 @@ export const fetchItem = (id) => async (dispatch) => {
     }
 
     const data = await response.json();
-    const filteredSizes = data.sizes.filter(o => o.avalible);
+    const filteredSizes = data.sizes.filter(item => item.avalible);
     dispatch(setAvalibleSizes(filteredSizes));
     dispatch(fetchItemSuccess(data));
   } catch (error) {
@@ -302,13 +303,10 @@ export const getCartTotal = () => (dispatch, getState) => {
     return;
   }
 
-  const total = cartItems.length > 1
-    ? cartItems.reduce((previousItem, item) => {
-        const prevSum = previousItem.price * previousItem.quantity;
-        const sum = item.price * item.quantity;
-        return prevSum + sum;
-      })
-    : cartItems[0].price * cartItems[0].quantity;
+  const total = cartItems.reduce((sum, item) => {
+    const itemSum = item.price * item.quantity;
+    return itemSum + sum;
+  }, 0);
 
   dispatch(setCartTotal(total));
 };
@@ -320,7 +318,7 @@ export const getCartItems = () => (dispatch) => {
   for(let key of keys) {
     cartItems.push(JSON.parse(localStorage.getItem(key)));
   }
-  cartItems.length > 0 ? dispatch(getCartItemsSuccess(cartItems)) : dispatch(getCartItemsSuccess(null));
+  if (cartItems.length > 0) dispatch(getCartItemsSuccess(cartItems));
   dispatch(getCartTotal());
 };
 
@@ -329,11 +327,11 @@ export const fetchOrder = () => async (dispatch, getState) => {
   dispatch(fetchOrderRequest());
   
   const items = [];
-  cartItems.forEach(o => {
+  cartItems.forEach(item => {
     items.push({
-      id: o.id,
-      price: o.price,
-      count: o.quantity
+      id: item.id,
+      price: item.price,
+      count: item.quantity
     })
   });
 
@@ -346,7 +344,7 @@ export const fetchOrder = () => async (dispatch, getState) => {
   }
   
   try {
-    const response = await fetch(`${process.env.REACT_APP_API_ORDER}`, {
+    const response = await fetch(`${urls.order}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json;charset=utf-8'

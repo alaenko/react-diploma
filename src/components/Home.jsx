@@ -2,7 +2,7 @@ import React, {Fragment} from 'react';
 import TopSales from './TopSales';
 import Catalog from './Catalog';
 
-export default function Home({history, location}) {
+export default function Home() {
 
   return (
     <Fragment>
@@ -12,7 +12,7 @@ export default function Home({history, location}) {
       </section>
       <section className="catalog">
         <h2 className="text-center">Каталог</h2>
-        <Catalog location={location} history={history}/>
+        <Catalog />
       </section>
     </Fragment>
   )

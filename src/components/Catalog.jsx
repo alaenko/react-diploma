@@ -1,13 +1,13 @@
 
 import React, { useEffect, Fragment } from 'react';
-import {NavLink, Link} from 'react-router-dom';
+import {NavLink, Link, withRouter} from 'react-router-dom';
 import {useSelector, useDispatch} from 'react-redux';
 import {fetchItems, fetchCategories, fetchMore, changeSearchField} from '../actions/actionCreators';
 import Preloader from './Preloader';
 import Error from './Error';
 import Search from './Search';
 
-export default function Catalog({location, history}) {
+function Catalog({location, history}) {
   const {items, categories, more} = useSelector(state => state.catalog);
   const {searchString} = useSelector(state => state.search);
 
@@ -55,7 +55,7 @@ export default function Catalog({location, history}) {
 
   if (categories.loading) return <Preloader />
 
-  if (categories.error) return <Error func={dispatch(fetchCategories())}/>
+  if (categories.error) return <Error callback={dispatch(fetchCategories())}/>
 
   return (
     <Fragment>
@@ -64,24 +64,24 @@ export default function Catalog({location, history}) {
         <li className="nav-item">
           <NavLink to='#' isActive={() => !params.has('categoryId')} onClick={(evt) => handleClickCategory(evt)} className="nav-link" activeClassName="active">Все</NavLink>
        </li>
-        {categories.data.map(o => (
-          <li className="nav-item" key={o.id}>
-            <NavLink to='#' isActive={() => params.get('categoryId') == o.id} onClick={(evt) => handleClickCategory(evt, o.id)} className="nav-link" activeClassName="active" >{o.title}</NavLink>
+        {categories.data.map(item => (
+          <li className="nav-item" key={item.id}>
+            <NavLink to='#' isActive={() => params.get('categoryId') == item.id} onClick={(evt) => handleClickCategory(evt, item.id)} className="nav-link" activeClassName="active" >{item.title}</NavLink>
 
           </li>
         ))}
       </ul>
-      {items.error ? <Error func={dispatch(fetchItems(params))}/> :
+      {items.error ? <Error callback={dispatch(fetchItems(params))}/> :
         items.data.length > 0 && (
           <div className="row">
-            {items.data.map(o => (
-              <div className="col-4" key={o.id}>
+            {items.data.map(item => (
+              <div className="col-4" key={item.id}>
                 <div className="card catalog-item-card">
-                  <img src={o.images[0]} className="card-img-top img-fluid" alt={o.title}/>
+                  <img src={item.images[0]} className="card-img-top img-fluid" alt={item.title}/>
                   <div className="card-body">
-                    <p className="card-text">{o.title}</p>
-                    <p className="card-text">{o.price} руб.</p>
-                    <Link to={`/products/${o.id}.html`} className="btn btn-outline-primary">Заказать</Link>
+                    <p className="card-text">{item.title}</p>
+                    <p className="card-text">{item.price} руб.</p>
+                    <Link to={`/products/${item.id}.html`} className="btn btn-outline-primary">Заказать</Link>
                   </div>
                 </div>
               </div>
@@ -91,7 +91,7 @@ export default function Catalog({location, history}) {
       }
       {(!items.loading && items.data.length) === 0 && <p className="text-center">Ничего не найдено :(</p>}
       {items.loading && <Preloader />}
-      {more.error && <Error func={handleMore}/>}
+      {more.error && <Error callback={handleMore}/>}
       {((!items.loading && more.show) && items.data.length > 5) && (
         <div className="text-center">
           <button className="btn btn-outline-primary" onClick={handleMore}>Загрузить ещё</button>
@@ -100,4 +100,7 @@ export default function Catalog({location, history}) {
     </Fragment>
   )
 }
+
+const CatalogWithRouter = withRouter(Catalog);
+export default CatalogWithRouter;
 

@@ -14,7 +14,7 @@ function Header({history}) {
   const handleSubmit = (evt) => {
     evt.preventDefault();
     if (searchString) {
-      history.replace(`/catalog.html?q=${searchString}`);
+      history.replace(`/catalog?q=${searchString}`);
       dispatch(setSearching());
     }
   }
@@ -41,19 +41,19 @@ function Header({history}) {
                   <NavLink to="/" className="nav-link" exact>Главная</NavLink>
                 </li>
                 <li className="nav-item">
-                  <NavLink to="/catalog.html" className="nav-link">Каталог</NavLink>
+                  <NavLink to="/catalog" className="nav-link">Каталог</NavLink>
                 </li>
                 <li className="nav-item">
-                  <NavLink to="/about.html" className="nav-link">О магазине</NavLink>
+                  <NavLink to="/about" className="nav-link">О магазине</NavLink>
                 </li>
                 <li className="nav-item">
-                  <NavLink to="/contacts.html" className="nav-link">Контакты</NavLink>
+                  <NavLink to="/contacts" className="nav-link">Контакты</NavLink>
                 </li>
               </ul>
               <div>
                 <div className="header-controls-pics">
                   <div onClick={handleSearchClick} className="header-controls-pic header-controls-search"></div>
-                  <Link to="/cart.html" className="header-controls-pic header-controls-cart">
+                  <Link to="/cart" className="header-controls-pic header-controls-cart">
                     {cartItems && <div className="header-controls-cart-full">{cartItems.length}</div>}
                     <div className="header-controls-cart-menu"></div>
                   </Link>
